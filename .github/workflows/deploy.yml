@@ -36,6 +36,12 @@ jobs:
         env:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.GCLIENT }}
 
+      - name: Delete existing "github-pages" artifact (if any)
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: github-pages
+          failOnError: false # Don't fail if the artifact doesn't exist
+          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
