@@ -5,6 +5,7 @@ import { ChatInterface, MessageInterface } from '@type/chat';
 import { getChatCompletion, getChatCompletionStream } from '@api/api';
 import { parseEventSource } from '@api/helper';
 import { limitMessageTokens, updateTotalTokenUsed } from '@utils/messageUtils';
+import { getCurrentJwtToken } from '@utils/auth';
 import { _defaultChatConfig } from '@constants/chat';
 import { officialAPIEndpoint } from '@constants/auth';
 
@@ -24,6 +25,9 @@ const useSubmit = () => {
   ): Promise<string> => {
     let data;
     try {
+      // Get JWT token if available
+      const jwtToken = getCurrentJwtToken();
+      
       if (!apiKey || apiKey.length === 0) {
         // official endpoint
         if (apiEndpoint === officialAPIEndpoint) {
@@ -34,7 +38,10 @@ const useSubmit = () => {
         data = await getChatCompletion(
           useStore.getState().apiEndpoint,
           message,
-          _defaultChatConfig
+          _defaultChatConfig,
+          undefined,
+          undefined,
+          jwtToken
         );
       } else if (apiKey) {
         // own apikey
@@ -42,7 +49,9 @@ const useSubmit = () => {
           useStore.getState().apiEndpoint,
           message,
           _defaultChatConfig,
-          apiKey
+          apiKey,
+          undefined,
+          jwtToken
         );
       }
     } catch (error: unknown) {
@@ -77,6 +86,9 @@ const useSubmit = () => {
       );
       if (messages.length === 0) throw new Error('Message exceed max token!');
 
+      // Get JWT token if available
+      const jwtToken = getCurrentJwtToken();
+      
       // no api key (free)
       if (!apiKey || apiKey.length === 0) {
         // official endpoint
@@ -88,7 +100,10 @@ const useSubmit = () => {
         stream = await getChatCompletionStream(
           useStore.getState().apiEndpoint,
           messages,
-          chats[currentChatIndex].config
+          chats[currentChatIndex].config,
+          undefined,
+          undefined,
+          jwtToken
         );
       } else if (apiKey) {
         // own apikey
@@ -96,7 +111,9 @@ const useSubmit = () => {
           useStore.getState().apiEndpoint,
           messages,
           chats[currentChatIndex].config,
-          apiKey
+          apiKey,
+          undefined,
+          jwtToken
         );
       }
 

@@ -7,13 +7,19 @@ export const getChatCompletion = async (
   messages: MessageInterface[],
   config: ConfigInterface,
   apiKey?: string,
-  customHeaders?: Record<string, string>
+  customHeaders?: Record<string, string>,
+  jwtToken?: string
 ) => {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...customHeaders,
   };
-  if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+  // Use JWT token if provided, otherwise use API key
+  if (jwtToken) {
+    headers.Authorization = jwtToken;
+  } else if (apiKey) {
+    headers.Authorization = `Bearer ${apiKey}`;
+  }
 
   if (isAzureEndpoint(endpoint) && apiKey) {
     headers['api-key'] = apiKey;
@@ -63,13 +69,19 @@ export const getChatCompletionStream = async (
   messages: MessageInterface[],
   config: ConfigInterface,
   apiKey?: string,
-  customHeaders?: Record<string, string>
+  customHeaders?: Record<string, string>,
+  jwtToken?: string
 ) => {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...customHeaders,
   };
-  if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+  // Use JWT token if provided, otherwise use API key
+  if (jwtToken) {
+    headers.Authorization = jwtToken;
+  } else if (apiKey) {
+    headers.Authorization = `Bearer ${apiKey}`;
+  }
 
   if (isAzureEndpoint(endpoint) && apiKey) {
     headers['api-key'] = apiKey;
